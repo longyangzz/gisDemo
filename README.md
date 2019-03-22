@@ -1,5 +1,6 @@
 # gisDemo
 record some gis demos 
+reference: entwine.io、 cesium...   
 
 ## setup depend fro server.js
 gisDemo> npm install express --save   
