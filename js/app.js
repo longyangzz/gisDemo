@@ -134,6 +134,7 @@ var Page = React.createClass({
 
         var resources = [
             new Resource('Red Rocks Amphitheatre', 'red-rocks', both),
+            new Resource('cesium风场', 'demo1-CesiumWind', both),
 
         ];
 
