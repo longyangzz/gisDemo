@@ -110,7 +110,8 @@ var Thumb = React.createClass({
             <a href={ href }>
                 <img
                     className='img-responsive thumb img-thumbnail'
-                    src={ 'resources/images/' + r.page + '.jpg' }
+                    src={ 'resources/images/' + r.page + '.' + r.postfix }
+
                 />
             </a>
             <p className='lead center-block'>{ r.name } { flags }</p>
@@ -118,12 +119,17 @@ var Thumb = React.createClass({
     }
 });
 
-var Resource = function(name, page, params) {
+var Resource = function(name, page, params, postfix) {
+    if(postfix == undefined)
+    {
+        postfix = "jpg";
+    }
     this.name = name;
     this.page = page;
     this.na = params.na;
     this.eu = params.eu;
     this.ext = params.ext;
+    this.postfix = postfix;
 };
 
 var Page = React.createClass({
@@ -134,7 +140,7 @@ var Page = React.createClass({
 
         var resources = [
             new Resource('Red Rocks Amphitheatre', 'red-rocks', both),
-            new Resource('cesium风场', 'demo1-CesiumWind', both),
+            new Resource('cesium风场', 'demo1-CesiumWind', both, "gif"),
 
         ];
 
