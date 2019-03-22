@@ -1,0 +1,25 @@
+{
+  "name": "gisdemo",
+  "version": "1.0.0",
+  "description": "gis demo for user",
+  "main": "main.js",
+  "scripts": {
+    "test": "node server.js",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/longyangzz/gisDemo.git"
+  },
+  "keywords": [
+    "gis",
+    "cesium",
+    "pointcloud"
+  ],
+  "author": "wly",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/longyangzz/gisDemo/issues"
+  },
+  "homepage": "https://github.com/longyangzz/gisDemo#readme"
+}
