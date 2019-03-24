@@ -8,7 +8,7 @@ var FRAME_RATE = 140;                      // desired milliseconds per frame
 //! 速率 xt = x + SPEED_RATE * v
 var SPEED_RATE = 1.0;
 
-var MAX_PARTICLE_AGE = 100;               // max number of frames a particle is drawn before regeneration
+var MAX_PARTICLE_AGE = 20;               // max number of frames a particle is drawn before regeneration
 
 var SECOND = 1000;
 var MINUTE = 60 * SECOND;
@@ -89,7 +89,7 @@ Windy.prototype = {
 
     evolveDraw: function()
     {
-        this.removeLines();
+        //this.removeLines();
         var self = this;
         var instances = [],
             nextX = null,
@@ -110,16 +110,16 @@ Windy.prototype = {
                     particle.age = MAX_PARTICLE_AGE;
                 } else {
                     var path = [];
-                    path.push(x, y);
+                    // path.push(x, y);
                     uv = field.getIn(x, y);
                     nextX = x +  SPEED_RATE * uv[0];
                     nextY = y +  SPEED_RATE * uv[1];
-                    //particle.path.push(nextX, nextY);
-                    path.push(nextX, nextY);
+                    particle.path.push(nextX, nextY);
+                    // path.push(nextX, nextY);
                     particle.x = nextX;
                     particle.y = nextY;
-                    // instances.push(self._createLineInstance(self._map(particle.path), particle.age / particle.birthAge));
-                    instances.push(self._createLineInstance(path, particle.age / particle.birthAge));
+                    instances.push(self._createLineInstance(self._map(particle.path), particle.age / particle.birthAge));
+                    // instances.push(self._createLineInstance(path, particle.age / particle.birthAge));
                     particle.age++;
                 }
             }
@@ -130,7 +130,7 @@ Windy.prototype = {
 
     animate: function (globe, field, grids) {
         //if (!globe || !field || !grids) return;
-
+        _primitives.removeAll();
         this.particles = [];
         //! 更新边界
         var bounds = this.getbounds();
