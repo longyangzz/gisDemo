@@ -4,9 +4,9 @@ var _primitives = null;
 var BRIGHTEN = 1.5;
 
 //! 多久更新一次
-var FRAME_RATE = 40;                      // desired milliseconds per frame
+var FRAME_RATE = 140;                      // desired milliseconds per frame
 //! 速率 xt = x + SPEED_RATE * v
-var SPEED_RATE = 0.3;
+var SPEED_RATE = 1.0;
 
 var MAX_PARTICLE_AGE = 100;               // max number of frames a particle is drawn before regeneration
 
@@ -109,13 +109,17 @@ Windy.prototype = {
                 if (!field.isInBound(x, y)) {
                     particle.age = MAX_PARTICLE_AGE;
                 } else {
+                    var path = [];
+                    path.push(x, y);
                     uv = field.getIn(x, y);
                     nextX = x +  SPEED_RATE * uv[0];
                     nextY = y +  SPEED_RATE * uv[1];
-                    particle.path.push(nextX, nextY);
+                    //particle.path.push(nextX, nextY);
+                    path.push(nextX, nextY);
                     particle.x = nextX;
                     particle.y = nextY;
-                    instances.push(self._createLineInstance(self._map(particle.path), particle.age / particle.birthAge));
+                    // instances.push(self._createLineInstance(self._map(particle.path), particle.age / particle.birthAge));
+                    instances.push(self._createLineInstance(path, particle.age / particle.birthAge));
                     particle.age++;
                 }
             }
@@ -127,13 +131,14 @@ Windy.prototype = {
     animate: function (globe, field, grids) {
         //if (!globe || !field || !grids) return;
 
+        this.particles = [];
         //! 更新边界
         var bounds = this.getbounds();
         var width = bounds.northeast.lng - bounds.southwest.lng;
 
         //! 计算当前范围内的粒子个数
         var particleCount = Math.round(width * PARTICLE_MULTIPLIER);
-        // particleCount = 1;
+        particleCount = 4000
         // console.log(particleCount);
 
         //! 初始化粒子数据
