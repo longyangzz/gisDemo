@@ -58,6 +58,13 @@
         infoBox: false,
         fullscreenButton: true
     });
+
+    var handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
+
+    handler.setInputAction(function(wheelment){
+        console.log('滚轮事件：',wheelment);
+        windy.animate();
+    },Cesium.ScreenSpaceEventType.WHEEL);
     Draw();
     var windy;
     function Draw() {
@@ -68,7 +75,7 @@
             success: function (response) {
                 var header = response[0].header;
                 windy = new Windy(response, viewer);
-                redraw();
+                windy.animate();
             },
             error: function (errorMsg) {
                 alert("请求数据失败1!");
@@ -78,11 +85,7 @@
 
     var timer = null;
 
-    function redraw() {
-        timer = setInterval(function () {
-            windy.animate();
-        }, 300);
-    }
+
     </script>
 </body>
 </html>
