@@ -12,6 +12,7 @@
     <script src="../Libs/wind/Particle.js"></script>
     <script src="../Libs/wind/WindField.js"></script>
     <script src="../Libs/wind/Windy.js"></script>
+    <script src="../Libs/wind/globeMaterials.js"></script>
     <style>
         html, body, #cesiumContainer {
             width: 100%;
@@ -56,9 +57,13 @@
         sceneModePicker: true,
         navigationHelpButton: false,
         infoBox: false,
-        fullscreenButton: true
+        fullscreenButton: true,
+        terrainProvider: Cesium.createWorldTerrain({
+            requestVertexNormals: true //Needed to visualize slope
+        })
     });
 
+    // viewer.scene.globe.enableLighting = true;
     var handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
 
     handler.setInputAction(function(wheelment){

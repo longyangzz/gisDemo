@@ -8,7 +8,7 @@ var FRAME_RATE = 140;                      // desired milliseconds per frame
 //! 速率 xt = x + SPEED_RATE * v
 var SPEED_RATE = 1.0;
 
-var MAX_PARTICLE_AGE = 20;               // max number of frames a particle is drawn before regeneration
+var MAX_PARTICLE_AGE = 8;               // max number of frames a particle is drawn before regeneration
 
 var SECOND = 1000;
 var MINUTE = 60 * SECOND;
@@ -54,6 +54,47 @@ Windy.prototype = {
     createField: function () {
         var data = this._parseWindJson();
         return new WindField(data);
+    },
+
+    createMask : function () {
+
+        var width = 500, height = 500;
+
+        var ramp = document.createElement('canvas');
+        ramp.width = width;
+        ramp.height = height;
+        var context = ramp.getContext('2d');
+
+
+        context.fillStyle = "rgba(255, 0, 0, 1)";
+        context.fill();
+
+        var imageData = context.getImageData(0, 0, width, height);
+        var data = imageData.data;  // layout: [r, g, b, a, r, g, b, a, ...]
+        return ramp;
+        // return {
+        //     imageData: imageData,
+        //     isVisible: function(x, y) {
+        //         var i = (y * width + x) * 4;
+        //         return data[i + 3] > 0;  // non-zero alpha means pixel is visible
+        //     },
+        //     // set: function(x, y, rgba) {
+        //     //     var i = (y * width + x) * 4;
+        //     //     data[i    ] = rgba[0];
+        //     //     data[i + 1] = rgba[1];
+        //     //     data[i + 2] = rgba[2];
+        //     //     data[i + 3] = rgba[3];
+        //     //     return this;
+        //     // }
+        //     set: function(x, y, rgba) {
+        //         var i = (y * width + x) * 4;
+        //         data[i    ] = 0;
+        //         data[i + 1] = 0;
+        //         data[i + 2] = 0;
+        //         data[i + 3] = 0;
+        //         return this;
+        //     }
+        // };
     },
 
     getbounds: function()
@@ -132,13 +173,17 @@ Windy.prototype = {
         //if (!globe || !field || !grids) return;
         _primitives.removeAll();
         this.particles = [];
+
+        //! 更新底图
+        updateMaterial(viewer);
+
         //! 更新边界
         var bounds = this.getbounds();
         var width = bounds.northeast.lng - bounds.southwest.lng;
 
         //! 计算当前范围内的粒子个数
         var particleCount = Math.round(width * PARTICLE_MULTIPLIER);
-        particleCount = 4000
+        particleCount = 10000
         // console.log(particleCount);
 
         //! 初始化粒子数据

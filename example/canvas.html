@@ -1,0 +1,58 @@
+<script type="text/javascript">
+  /*
+   * @param {object} img 展示反相的图片
+   */
+  function showRevertPic(img){
+    img.color = img.src;    // 给img添加属性指向源文件
+    img.revert = createRevertPic(img);   // 给img添加属性指向反相图片
+    img.onmouseout = function(){
+      this.src = img.revert;
+    }
+    img.onmouseover = function(){
+      this.src = img.color;
+    }
+    img.onmouseout(); // 默认展示一次图片反相
+  }
+
+  /*
+   * @param {object} img 要实现反相的图片
+   */   
+  function createRevertPic(img){
+    var canvas = document.createElement("canvas");
+    canvas.width = img.width;   
+    canvas.height = img.height;
+    var ctx = canvas.getContext("2d");
+    ctx.drawImage(img,0,0);  
+    var c = ctx.getImageData(0, 0, img.width, img.height);
+    //chrome浏览器报错，ie浏览器报安全错误信息，原因往下看
+    for(var i = 0; i < c.height; ++i){
+      for(var j = 0; j < c.width; ++j){
+        var x = i*4*c.width + 4*j,  //imagedata读取的像素数据存储在data属性里，是从上到下，从左到右的，每个像素需要占用4位数据，分别是r,g,b,alpha透明通道
+        r = c.data[x],
+        g = c.data[x+1],
+        b = c.data[x+2];
+        c.data[x+3] = 150;    //透明度设置为150,0表示完全透明
+        //图片反相：
+        c.data[x] = 255-r;
+        c.data[x+1] = 255-g;
+        c.data[x+2] = 255-b; 
+      }
+    }
+    //ctx.putImageData(c, 40, 40);
+    ctx.putImageData(c,0,0,40,40,200,300);    //裁剪效果见图1
+    return canvas.toDataURL();          //返回canvas图片数据url
+  }
+  window.onload=function() { 
+    var img = new Image();
+    img.crossOrigin = '';
+    img.src = "boy.png";
+    img.isLoad = false;
+    document.body.appendChild(img);
+    img.onload=function(){
+      if(!img.isLoad){
+        showRevertPic(img);
+        img.isLoad=true;
+      }
+    }
+  }
+</script>
