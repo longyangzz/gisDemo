@@ -34,6 +34,10 @@
             this.unit = header['parameterUnit'];
             this.date = header['refTime'];
 
+            this.cloumnMin = 0;
+            this.cloumnMax = 0;
+            this.rowMin = 0;
+            this.rowMax = 0;
             this.grid = [];
             var k = 0,
                 rows = null,

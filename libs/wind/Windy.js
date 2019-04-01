@@ -102,10 +102,33 @@ Windy.prototype = {
         // 创建风场粒子根据当前视野大小
         var rectangle = this.cesiumViewer.camera.computeViewRectangle();
         // 弧度转为经纬度，west为左（西）侧边界的经度，以下类推
-        var west =rectangle.west / Math.PI * 180;
+        //! 经度范围转为0-360
+        var west =rectangle.west / Math.PI * 180 + 180;
         var north = rectangle.north / Math.PI * 180;
-        var east = rectangle.east / Math.PI * 180;
-        var south = rectangle.south / Math.PI * 180;
+        var east = rectangle.east / Math.PI * 180 + 180;
+        var south = rectangle.south / Math.PI * 180 ;
+
+        //！ 初始化可视区域
+        // 110.35320584700008,31.38437711000006,116.64388570600008,36.36653865000006
+        var west = 73.35320584700008;
+        var north = 53.36653865000006;
+        var east = 135.64388570600008;
+        var south = 3.38437711000006;
+
+        field = this.windField;
+        var dx = field.dx;
+        var dy = field.dy;
+        var stwest = field.west;
+        var stsouth = field.south;
+        this.windField.cloumnMin = Math.floor((west-stwest) / dx);
+        this.windField.cloumnMax = Math.floor((east-stwest) / dx);;
+        this.windField.rowMin = Math.floor((south-stsouth) / dy);;
+        this.windField.rowMax = Math.floor((north-stsouth) / dy);;
+
+        // this.windField.cloumnMin = 200;
+        // this.windField.cloumnMax = 400;;
+        // this.windField.rowMin = 100;;
+        // this.windField.rowMax = 300;
         // 鉴于高德、leaflet获取的边界都是southwest和northeast字段来表示，本例保持一致性
         var extent = {
             southwest: {
@@ -144,7 +167,7 @@ Windy.prototype = {
                 self.randomParticle(particle);
             }
 
-            if (particle.age > 0) {
+            if (particle.age >= 0) {
                 var x = particle.x,
                     y = particle.y;
                 if (!field.isInBound(x, y)) {
@@ -183,8 +206,8 @@ Windy.prototype = {
 
         //! 计算当前范围内的粒子个数
         var particleCount = Math.round(width * PARTICLE_MULTIPLIER);
-        particleCount = 10000
-        // console.log(particleCount);
+         particleCount = 4000
+         console.log(particleCount);
 
         //! 初始化粒子数据
         for (var i = 0; i < particleCount; i++) {
@@ -242,12 +265,12 @@ Windy.prototype = {
             dx = field.dx,
             dy = field.dy,
             west = field.west,
-            south = field.north,
+            south = field.south,
             newArr = [];
         for (var i = 0; i <= length - 2; i += 2) {
             newArr.push(
                 west + arr[i] * dx,
-                south - arr[i + 1] * dy
+                south + arr[i + 1] * dy
             )
         }
         return newArr;
@@ -257,7 +280,8 @@ Windy.prototype = {
             length = positions.length,
             count = length / 2;
         for (var i = 0; i < length; i++) {
-            colors.push(Cesium.Color.WHITE.withAlpha(i / count * ageRate * BRIGHTEN));
+            //colors.push(Cesium.Color.WHITE.withAlpha(i / count * ageRate * BRIGHTEN));
+            colors.push(Cesium.Color.WHITE);
         }
         return new Cesium.GeometryInstance({
             geometry: new Cesium.PolylineGeometry({
@@ -282,9 +306,11 @@ Windy.prototype = {
     randomParticle: function (particle) {
         var safe = 30,x, y;
 
+        //! xy根据当前视野所属的bound行列号创建
         do {
-            x = Math.floor(Math.random() * (this.windField.cols - 2));
-            y = Math.floor(Math.random() * (this.windField.rows - 2));
+
+            x = Math.floor(Math.random() * (this.windField.cloumnMax - this.windField.cloumnMin) + this.windField.cloumnMin );
+            y = Math.floor(Math.random() * (this.windField.rowMax - this.windField.rowMin) + this.windField.rowMin);
         } while (this.windField.getIn(x, y)[2] <= 0 && safe++ < 30);
 
         particle.x = x;

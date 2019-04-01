@@ -190,7 +190,7 @@ function updateMaterial(viewer) {
         shadingUniforms = material.uniforms;
     }
     if (selectedShading !== 'none') {
-        shadingUniforms.image = createMask(selectedShading);
+        shadingUniforms.image = getColorRamp(selectedShading);
     }
 
     globe.material = material;
