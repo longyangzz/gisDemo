@@ -6,9 +6,9 @@ var BRIGHTEN = 1.5;
 //! 多久更新一次
 var FRAME_RATE = 140;                      // desired milliseconds per frame
 //! 速率 xt = x + SPEED_RATE * v
-var SPEED_RATE = 4;
+var SPEED_RATE = 1;
 
-var MAX_PARTICLE_AGE = 100;               // max number of frames a particle is drawn before regeneration
+var MAX_PARTICLE_AGE = 30;               // max number of frames a particle is drawn before regeneration
 
 var SECOND = 1000;
 var MINUTE = 60 * SECOND;
@@ -257,6 +257,13 @@ Windy.prototype = {
                 var tempRow = this.windField.rowMin + row * (this.windField.rowMax - this.windField.rowMin) / c.height;
 
 
+                // 初始化粒子数据，每两个取一个粒子
+                // if(row%10==0  || col%16==0)
+                // {
+                //     this.particles.push(this.particleByPos(new Particle(), tempCol, tempRow));
+                // }
+
+
                 //! 根据当前行列号，转换为在wind grid中的行列号，取出数值
                 var uv = this.windField.getIn(tempCol, tempRow);
                 // var uv = this.windField.getIn(col, row);
@@ -294,8 +301,8 @@ Windy.prototype = {
 
         //! 计算当前范围内的粒子个数
         var particleCount = Math.round(width * PARTICLE_MULTIPLIER);
-         // particleCount = 1000
-         console.log(particleCount);
+        particleCount = 4000
+        console.log(particleCount);
 
         //! 初始化粒子数据
         for (var i = 0; i < particleCount; i++) {
@@ -399,6 +406,16 @@ Windy.prototype = {
             y = Math.floor(Math.random() * (this.windField.rowMax - this.windField.rowMin) + this.windField.rowMin);
         } while (this.windField.getIn(x, y)[2] <= 0 && safe++ < 30);
 
+        particle.x = x;
+        particle.y = y;
+        particle.age = Math.round(Math.random() * MAX_PARTICLE_AGE);//每一次生成都不一样
+        particle.birthAge = particle.age;
+        particle.path = [x, y];
+        return particle;
+    },
+
+    //! 根据指定的位置生成粒子
+    particleByPos: function (particle, x,y) {
         particle.x = x;
         particle.y = y;
         particle.age = Math.round(Math.random() * MAX_PARTICLE_AGE);//每一次生成都不一样

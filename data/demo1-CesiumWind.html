@@ -72,6 +72,13 @@
         console.log('滚轮事件：',wheelment);
         windy.animate();
     },Cesium.ScreenSpaceEventType.WHEEL);
+
+    handler.setInputAction(function(click){
+        console.log('左键双击事件更新一帧：',click.position);
+        windy.evolveDraw();
+    },Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
+
+
     Draw();
     var windy;
     function Draw() {
