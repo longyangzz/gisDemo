@@ -374,7 +374,7 @@ Windy.prototype = {
             count = length / 2;
         for (var i = 0; i < length; i++) {
             //colors.push(Cesium.Color.WHITE.withAlpha(i / count * ageRate * BRIGHTEN));
-            colors.push(Cesium.Color.WHITE);
+            colors.push(Cesium.Color.fromBytes(85,85,85,250));
         }
         return new Cesium.GeometryInstance({
             geometry: new Cesium.PolylineGeometry({
