@@ -1,3 +1,5 @@
+var τ = 2 * Math.PI;
+var H = 0.0000360;  // 0.0000360°φ ~= 4m
 function ensureNumber(num, fallback) {
     return _.isFinite(num) || num === Infinity || num === -Infinity ? num : fallback;
 }
@@ -60,6 +62,14 @@ function sinebowColor(hue, a) {
 
 var BOUNDARY = 0.45;
 var fadeToWhite = colorInterpolator(sinebowColor(1.0, 0), [255, 255, 255]);
+
+function colorInterpolator(start, end) {
+    var r = start[0], g = start[1], b = start[2];
+    var Δr = end[0] - r, Δg = end[1] - g, Δb = end[2] - b;
+    return function(i, a) {
+        return [Math.floor(r + i * Δr), Math.floor(g + i * Δg), Math.floor(b + i * Δb), a];
+    };
+}
 
 /**
  * Interpolates a sinebow color where 0 <= i <= j, then fades to white where j < i <= 1.

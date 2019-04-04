@@ -40,6 +40,7 @@ var Windy = function (json, cesiumViewer) {
     _primitives = cesiumViewer.scene.primitives;
     this.cesiumViewer = cesiumViewer;
     this.custom_polygonOutlineModel = null;
+    this.scale = null;
     this._init();
 };
 Windy.prototype = {
@@ -47,10 +48,13 @@ Windy.prototype = {
     _init: function () {
         // 创建风场网格
         this.windField = this.createField();
-        // 创建风场粒子
-        // for (var i = 0; i < PARTICLES_NUMBER; i++) {
-        //     this.particles.push(this.randomParticle(new Particle()));
-        // }
+
+        this.scale = {
+                bounds: [0, 100],
+                gradient: function (v, a) {
+                    return extendedSinebowColor(Math.min(v, 100) / 100, a);
+                }
+        }
     },
     createField: function () {
         var data = this._parseWindJson();
@@ -234,26 +238,27 @@ Windy.prototype = {
         imageData[i + 3] = rgba[3];
     },
 
-    createBoundMask :function() {
-        var values = [0.0, 0.045, 0.1, 0.15, 0.37, 0.54, 1.0];
+    //！ 传入经纬度矩形边界，生成风场数据中的行列坐标，取出值，更新颜色，写道canvas 的image中
+    createBoundMask :function(bounds) {
+        var bdWidth = Math.floor( (this.windField.cloumnMax - this.windField.cloumnMin) / this.windField.dx ) ;
+        var bdHeight = Math.floor( (this.windField.rowMax - this.windField.rowMin) / this.windField.dy );
+
         var canvas = document.createElement('canvas');
-        canvas.width = 500;
-        canvas.height = 500;
+        canvas.width = bdWidth;
+        canvas.height = bdHeight;
         var context = canvas.getContext('2d');
-
-
 
         var c = context.getImageData(0, 0, canvas.width, canvas.height);
         for(var row = 0; row < c.height; ++row){
             for(var col = 0; col < c.width; ++col){
 
-                 var rgba = [255,0,0,150];
-                 this.setMaskValue(col, row, c.width, c.data, rgba);
-                // var x = row*4*c.width + 4*col;
-                // c.data[x+3] = 150;
-                // c.data[x] = 255;
-                // c.data[x+1] = 0;
-                // c.data[x+2] = 0;
+                //! 根据当前行列号，转换为在wind grid中的行列号，取出数值
+                var rgba = [255,0,0,150];
+                var uv = this.windField.getIn(col, row);
+                var scalar = uv[2];
+                var color = this.scale.gradient(scalar, OVERLAY_ALPHA);
+                 //！ 取出当前边界范围，对应的行列号从风场中取出观测值，转换为rgba值，
+                 this.setMaskValue(col, row, c.width, c.data, color);
             }
         }
 
@@ -267,13 +272,19 @@ Windy.prototype = {
         _primitives.removeAll();
         this.particles = [];
 
-        //! 更新底图
-        //updateMaterial(viewer);
-        var bMask = this.createBoundMask();
-
         //! 更新边界
         var bounds = this.getbounds();
+
+        //! 更新底图
+        //updateMaterial(viewer);
+        var bMask = this.createBoundMask(bounds);
+
+
+        //! 绘制带底图的边界
         this.drawBoundsWithMask(bounds, bMask);
+
+
+        //！ 生成粒子绘制风场
         var width = bounds.northeast.lng - bounds.southwest.lng;
 
         //! 计算当前范围内的粒子个数
@@ -297,7 +308,7 @@ Windy.prototype = {
 
         (function frame() {
 
-            windy.evolveDraw();
+            //windy.evolveDraw();
             setTimeout(frame, FRAME_RATE);
 
         })();
