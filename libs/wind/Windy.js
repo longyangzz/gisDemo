@@ -39,6 +39,7 @@ var Windy = function (json, cesiumViewer) {
     this.lines = null;
     _primitives = cesiumViewer.scene.primitives;
     this.cesiumViewer = cesiumViewer;
+    this.custom_polygonOutlineModel = null;
     this._init();
 };
 Windy.prototype = {
@@ -95,6 +96,38 @@ Windy.prototype = {
         //         return this;
         //     }
         // };
+    },
+
+    drawBoundsWithMask: function(extent, mask)
+    {
+        if(this.custom_polygonOutlineModel)
+        {
+            this.cesiumViewer.scene.primitives.remove(this.custom_polygonOutlineModel);
+        }
+
+        this.custom_polygonOutlineModel = this.cesiumViewer.scene.primitives.add(new Cesium.Primitive({
+            geometryInstances : new Cesium.GeometryInstance({
+                geometry : new Cesium.RectangleGeometry({
+                    rectangle : Cesium.Rectangle.fromDegrees(extent.southwest.lng, extent.southwest.lat, extent.northeast.lng, extent.northeast.lat),
+                    vertexFormat : Cesium.EllipsoidSurfaceAppearance.VERTEX_FORMAT
+                })
+            }),
+            appearance : new Cesium.EllipsoidSurfaceAppearance({
+                aboveGround : false
+            })
+        }));
+
+        this.custom_polygonOutlineModel.appearance.material = new Cesium.Material({
+            fabric : {
+                type : 'Image',
+                uniforms : {
+                    image : '../../resources/images/2.png'
+                }
+            }
+        });
+
+        var bb= Cesium.Rectangle.fromDegrees(extent.southwest.lng, extent.southwest.lat, extent.northeast.lng, extent.northeast.lat);
+        var aa = this.cesiumViewer.camera.viewMatrix;
     },
 
     getbounds: function()
@@ -192,21 +225,47 @@ Windy.prototype = {
         self._drawLines(instances);
     },
 
+    createBoundMask :function() {
+        var values = [0.0, 0.045, 0.1, 0.15, 0.37, 0.54, 1.0];
+        var ramp = document.createElement('canvas');
+        ramp.width = 100;
+        ramp.height = 1;
+        var ctx = ramp.getContext('2d');
+
+        var values;
+
+        var grd = ctx.createLinearGradient(0, 0, 100, 0);
+        grd.addColorStop(values[0], '#000000'); //black
+        grd.addColorStop(values[1], '#2747E0'); //blue
+        grd.addColorStop(values[2], '#D33B7D'); //pink
+        grd.addColorStop(values[3], '#D33038'); //red
+        grd.addColorStop(values[4], '#FF9742'); //orange
+        grd.addColorStop(values[5], '#ffd700'); //yellow
+        grd.addColorStop(values[6], '#ffffff'); //white
+
+        ctx.fillStyle = grd;
+        ctx.fillRect(0, 0, 100, 1);
+
+        return ramp;
+    },
+
     animate: function (globe, field, grids) {
         //if (!globe || !field || !grids) return;
         _primitives.removeAll();
         this.particles = [];
 
         //! 更新底图
-        updateMaterial(viewer);
+        //updateMaterial(viewer);
+        var bMask = this.createBoundMask();
 
         //! 更新边界
         var bounds = this.getbounds();
+        this.drawBoundsWithMask(bounds, bMask);
         var width = bounds.northeast.lng - bounds.southwest.lng;
 
         //! 计算当前范围内的粒子个数
         var particleCount = Math.round(width * PARTICLE_MULTIPLIER);
-         particleCount = 4000
+         particleCount = 1000
          console.log(particleCount);
 
         //! 初始化粒子数据
@@ -218,8 +277,10 @@ Windy.prototype = {
             field = self.windField,
             particles = self.particles;
 
-        //！ 更新粒子数据渲染绘制
-        //this.evolveDraw();
+        //！ 更新位置
+        this.cesiumViewer.camera.setView({
+            destination : Cesium.Rectangle.fromDegrees(bounds.southwest.lng, bounds.southwest.lat, bounds.northeast.lng, bounds.northeast.lat)
+        });
 
         (function frame() {
 
