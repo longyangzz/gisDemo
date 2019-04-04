@@ -2,10 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="fa8a07c9-307b-451a-850f-7a7600e3735d" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/wind/WindField.js" beforeDir="false" afterPath="$PROJECT_DIR$/libs/wind/WindField.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/demo1-CesiumWind.html" beforeDir="false" afterPath="$PROJECT_DIR$/data/demo1-CesiumWind.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/libs/wind/Windy.js" beforeDir="false" afterPath="$PROJECT_DIR$/libs/wind/Windy.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sampledata/wind/2017121300.json1" beforeDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -28,25 +26,24 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/data/demo1-CesiumWind.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="308">
-              <caret line="14" column="33" selection-start-line="14" selection-start-column="33" selection-end-line="14" selection-end-column="33" />
+            <state relative-caret-position="198">
+              <caret line="87" column="85" selection-start-line="87" selection-start-column="85" selection-end-line="87" selection-end-column="85" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/libs/wind/Windy.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="204">
-              <caret line="311" column="12" lean-forward="true" selection-start-line="311" selection-start-column="12" selection-end-line="311" selection-end-column="12" />
+            <state relative-caret-position="223">
+              <caret line="151" column="26" lean-forward="true" selection-start-line="151" selection-start-column="20" selection-end-line="151" selection-end-column="26" />
               <folding>
                 <element signature="e#2530#3857#0" />
                 <element signature="e#3891#3907#0" />
                 <element signature="e#5597#6011#0" />
-                <element signature="e#3890#5651#0" />
               </folding>
             </state>
           </provider>
@@ -172,14 +169,14 @@
         <option value="$PROJECT_DIR$/index.html" />
         <option value="$PROJECT_DIR$/js/app.js" />
         <option value="$PROJECT_DIR$/libs/wind/globeMaterials.js" />
-        <option value="$PROJECT_DIR$/data/demo1-CesiumWind.html" />
         <option value="$PROJECT_DIR$/libs/wind/product.js" />
         <option value="$PROJECT_DIR$/libs/wind/WindField.js" />
         <option value="$PROJECT_DIR$/libs/wind/Windy.js" />
+        <option value="$PROJECT_DIR$/data/demo1-CesiumWind.html" />
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
+  <component name="ProjectFrameBounds" extendedState="7">
     <option name="x" value="-10" />
     <option name="width" value="1935" />
     <option name="height" value="1040" />
@@ -228,7 +225,7 @@
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1554366163463" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1554367971757" />
     <property name="last_opened_file_path" value="H:/2.code/gitspace/ExamplesforCesium-master" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
@@ -269,12 +266,12 @@
       <workItem from="1553676179281" duration="1982000" />
       <workItem from="1553918744302" duration="10897000" />
       <workItem from="1554101385763" duration="7235000" />
-      <workItem from="1554353609351" duration="10874000" />
+      <workItem from="1554353609351" duration="12805000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="51215000" />
+    <option name="totallyTimeSpent" value="53146000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-7" y="-7" width="1550" height="838" extended-state="6" />
@@ -461,13 +458,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/data/demo1-CesiumWind.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="308">
-          <caret line="14" column="33" selection-start-line="14" selection-start-column="33" selection-end-line="14" selection-end-column="33" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/libs/wind/product.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="22">
@@ -500,14 +490,20 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/libs/wind/Windy.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="204">
-          <caret line="311" column="12" lean-forward="true" selection-start-line="311" selection-start-column="12" selection-end-line="311" selection-end-column="12" />
+        <state relative-caret-position="223">
+          <caret line="151" column="26" lean-forward="true" selection-start-line="151" selection-start-column="20" selection-end-line="151" selection-end-column="26" />
           <folding>
             <element signature="e#2530#3857#0" />
             <element signature="e#3891#3907#0" />
             <element signature="e#5597#6011#0" />
-            <element signature="e#3890#5651#0" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/data/demo1-CesiumWind.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="198">
+          <caret line="87" column="85" selection-start-line="87" selection-start-column="85" selection-end-line="87" selection-end-column="85" />
         </state>
       </provider>
     </entry>

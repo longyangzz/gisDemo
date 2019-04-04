@@ -6,9 +6,9 @@ var BRIGHTEN = 1.5;
 //! 多久更新一次
 var FRAME_RATE = 140;                      // desired milliseconds per frame
 //! 速率 xt = x + SPEED_RATE * v
-var SPEED_RATE = 1.0;
+var SPEED_RATE = 4;
 
-var MAX_PARTICLE_AGE = 8;               // max number of frames a particle is drawn before regeneration
+var MAX_PARTICLE_AGE = 100;               // max number of frames a particle is drawn before regeneration
 
 var SECOND = 1000;
 var MINUTE = 60 * SECOND;
@@ -214,8 +214,8 @@ Windy.prototype = {
                     var path = [];
                     // path.push(x, y);
                     uv = field.getIn(x, y);
-                    nextX = x +  SPEED_RATE * uv[0];
-                    nextY = y +  SPEED_RATE * uv[1];
+                    nextX = x +  SPEED_RATE * uv[0] / MAX_PARTICLE_AGE;
+                    nextY = y +  SPEED_RATE * uv[1] / MAX_PARTICLE_AGE;
                     particle.path.push(nextX, nextY);
                     // path.push(nextX, nextY);
                     particle.x = nextX;
@@ -241,8 +241,8 @@ Windy.prototype = {
     //！ 传入经纬度矩形边界，生成风场数据中的行列坐标，取出值，更新颜色，写道canvas 的image中
     createBoundMask :function(bounds) {
         //！1、 行数和列数被放大了，初一dx dy能增加图像的像素质量
-        var bdWidth = Math.floor( (this.windField.cloumnMax - this.windField.cloumnMin)  ) ;
-        var bdHeight = Math.floor( (this.windField.rowMax - this.windField.rowMin)  );
+        var bdWidth = Math.floor( (this.windField.cloumnMax - this.windField.cloumnMin) / this.windField.dx ) ;
+        var bdHeight = Math.floor( (this.windField.rowMax - this.windField.rowMin) / this.windField.dy );
 
         var canvas = document.createElement('canvas');
         canvas.width = bdWidth;
@@ -252,9 +252,14 @@ Windy.prototype = {
         var c = context.getImageData(0, 0, canvas.width, canvas.height);
         for(var row = 0; row < c.height; ++row){
             for(var col = 0; col < c.width; ++col){
+                //! 0---height  0-width  转换为【minCol - maxCol】 [minheight-maxHeight]
+                var tempCol = this.windField.cloumnMin + col * (this.windField.cloumnMax - this.windField.cloumnMin) / c.width;
+                var tempRow = this.windField.rowMin + row * (this.windField.rowMax - this.windField.rowMin) / c.height;
+
 
                 //! 根据当前行列号，转换为在wind grid中的行列号，取出数值
-                var uv = this.windField.getIn(col + this.windField.cloumnMin, row + this.windField.rowMin);
+                var uv = this.windField.getIn(tempCol, tempRow);
+                // var uv = this.windField.getIn(col, row);
                 var scalar = uv[2];
                 var color = this.scale.gradient(scalar, OVERLAY_ALPHA);
                  //！ 取出当前边界范围，对应的行列号从风场中取出观测值，转换为rgba值，
@@ -289,7 +294,7 @@ Windy.prototype = {
 
         //! 计算当前范围内的粒子个数
         var particleCount = Math.round(width * PARTICLE_MULTIPLIER);
-         particleCount = 1000
+         // particleCount = 1000
          console.log(particleCount);
 
         //! 初始化粒子数据
@@ -301,14 +306,10 @@ Windy.prototype = {
             field = self.windField,
             particles = self.particles;
 
-        //！ 更新位置
-        this.cesiumViewer.camera.setView({
-            destination : Cesium.Rectangle.fromDegrees(bounds.southwest.lng, bounds.southwest.lat, bounds.northeast.lng, bounds.northeast.lat)
-        });
 
         (function frame() {
 
-            // windy.evolveDraw();
+            windy.evolveDraw();
             setTimeout(frame, FRAME_RATE);
 
         })();

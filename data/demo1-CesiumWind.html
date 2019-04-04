@@ -83,6 +83,10 @@
                 var header = response[0].header;
                 windy = new Windy(response, viewer);
                 windy.animate();
+                //！ 更新位置
+                viewer.camera.setView({
+                    destination : Cesium.Rectangle.fromDegrees(73, 3, 135.643, 53.366)
+                });
             },
             error: function (errorMsg) {
                 alert("请求数据失败1!");
