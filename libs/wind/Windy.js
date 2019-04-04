@@ -240,8 +240,9 @@ Windy.prototype = {
 
     //！ 传入经纬度矩形边界，生成风场数据中的行列坐标，取出值，更新颜色，写道canvas 的image中
     createBoundMask :function(bounds) {
-        var bdWidth = Math.floor( (this.windField.cloumnMax - this.windField.cloumnMin) / this.windField.dx ) ;
-        var bdHeight = Math.floor( (this.windField.rowMax - this.windField.rowMin) / this.windField.dy );
+        //！1、 行数和列数被放大了，初一dx dy能增加图像的像素质量
+        var bdWidth = Math.floor( (this.windField.cloumnMax - this.windField.cloumnMin)  ) ;
+        var bdHeight = Math.floor( (this.windField.rowMax - this.windField.rowMin)  );
 
         var canvas = document.createElement('canvas');
         canvas.width = bdWidth;
@@ -253,8 +254,7 @@ Windy.prototype = {
             for(var col = 0; col < c.width; ++col){
 
                 //! 根据当前行列号，转换为在wind grid中的行列号，取出数值
-                var rgba = [255,0,0,150];
-                var uv = this.windField.getIn(col, row);
+                var uv = this.windField.getIn(col + this.windField.cloumnMin, row + this.windField.rowMin);
                 var scalar = uv[2];
                 var color = this.scale.gradient(scalar, OVERLAY_ALPHA);
                  //！ 取出当前边界范围，对应的行列号从风场中取出观测值，转换为rgba值，
@@ -308,7 +308,7 @@ Windy.prototype = {
 
         (function frame() {
 
-            //windy.evolveDraw();
+            // windy.evolveDraw();
             setTimeout(frame, FRAME_RATE);
 
         })();

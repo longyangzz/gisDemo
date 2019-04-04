@@ -66,6 +66,7 @@
             var x0 = Math.floor(x),
                 y0 = Math.floor(y),
                 x1, y1;
+            // console.log(x,y);
             if (x0 === x && y0 === y) return this.grid[y][x];
 
             x1 = x0 + 1;
