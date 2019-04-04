@@ -121,7 +121,8 @@ Windy.prototype = {
             fabric : {
                 type : 'Image',
                 uniforms : {
-                    image : '../../resources/images/2.png'
+                    // image : '../../resources/images/2.png'
+                    image: mask
                 }
             }
         });
@@ -225,28 +226,40 @@ Windy.prototype = {
         self._drawLines(instances);
     },
 
+    setMaskValue: function(x, y,width, imageData, rgba) {
+        var i = (y * width + x) * 4;
+        imageData[i    ] = rgba[0];
+        imageData[i + 1] = rgba[1];
+        imageData[i + 2] = rgba[2];
+        imageData[i + 3] = rgba[3];
+    },
+
     createBoundMask :function() {
         var values = [0.0, 0.045, 0.1, 0.15, 0.37, 0.54, 1.0];
-        var ramp = document.createElement('canvas');
-        ramp.width = 100;
-        ramp.height = 1;
-        var ctx = ramp.getContext('2d');
+        var canvas = document.createElement('canvas');
+        canvas.width = 500;
+        canvas.height = 500;
+        var context = canvas.getContext('2d');
 
-        var values;
 
-        var grd = ctx.createLinearGradient(0, 0, 100, 0);
-        grd.addColorStop(values[0], '#000000'); //black
-        grd.addColorStop(values[1], '#2747E0'); //blue
-        grd.addColorStop(values[2], '#D33B7D'); //pink
-        grd.addColorStop(values[3], '#D33038'); //red
-        grd.addColorStop(values[4], '#FF9742'); //orange
-        grd.addColorStop(values[5], '#ffd700'); //yellow
-        grd.addColorStop(values[6], '#ffffff'); //white
 
-        ctx.fillStyle = grd;
-        ctx.fillRect(0, 0, 100, 1);
+        var c = context.getImageData(0, 0, canvas.width, canvas.height);
+        for(var row = 0; row < c.height; ++row){
+            for(var col = 0; col < c.width; ++col){
 
-        return ramp;
+                 var rgba = [255,0,0,150];
+                 this.setMaskValue(col, row, c.width, c.data, rgba);
+                // var x = row*4*c.width + 4*col;
+                // c.data[x+3] = 150;
+                // c.data[x] = 255;
+                // c.data[x+1] = 0;
+                // c.data[x+2] = 0;
+            }
+        }
+
+        context.putImageData(c,0,0,10,10,canvas.width, canvas.height);
+
+        return canvas.toDataURL();
     },
 
     animate: function (globe, field, grids) {
