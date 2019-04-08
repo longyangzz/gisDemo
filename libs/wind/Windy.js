@@ -8,7 +8,7 @@ var FRAME_RATE = 140;                      // desired milliseconds per frame
 //! 速率 xt = x + SPEED_RATE * v
 var SPEED_RATE = 1;
 
-var MAX_PARTICLE_AGE = 30;               // max number of frames a particle is drawn before regeneration
+var MAX_PARTICLE_AGE = 80;               // max number of frames a particle is drawn before regeneration
 
 var SECOND = 1000;
 var MINUTE = 60 * SECOND;
@@ -31,6 +31,9 @@ var HOLE_VECTOR = [NaN, NaN, null];       // singleton that signifies a hole in 
 var TRANSPARENT_BLACK = [0, 0, 0, 0];     // singleton 0 rgba
 var REMAINING = "▫▫▫▫▫▫▫▫▫▫▫▫▫▫▫▫▫▫▫▫▫▫";   // glyphs for remaining progress bar
 var COMPLETED = "▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪▪";   // glyphs for completed progress bar
+
+//! 默认指定绘图区域大小，程序中根据指定的经纬度范围进行折算
+var pixelboundx = {x: 0, y:0, xMax:700, yMax:500, width:700, height: 500};
 
 var Windy = function (json, cesiumViewer) {
     this.windData = json;
@@ -61,46 +64,6 @@ Windy.prototype = {
         return new WindField(data);
     },
 
-    createMask : function () {
-
-        var width = 500, height = 500;
-
-        var ramp = document.createElement('canvas');
-        ramp.width = width;
-        ramp.height = height;
-        var context = ramp.getContext('2d');
-
-
-        context.fillStyle = "rgba(255, 0, 0, 1)";
-        context.fill();
-
-        var imageData = context.getImageData(0, 0, width, height);
-        var data = imageData.data;  // layout: [r, g, b, a, r, g, b, a, ...]
-        return ramp;
-        // return {
-        //     imageData: imageData,
-        //     isVisible: function(x, y) {
-        //         var i = (y * width + x) * 4;
-        //         return data[i + 3] > 0;  // non-zero alpha means pixel is visible
-        //     },
-        //     // set: function(x, y, rgba) {
-        //     //     var i = (y * width + x) * 4;
-        //     //     data[i    ] = rgba[0];
-        //     //     data[i + 1] = rgba[1];
-        //     //     data[i + 2] = rgba[2];
-        //     //     data[i + 3] = rgba[3];
-        //     //     return this;
-        //     // }
-        //     set: function(x, y, rgba) {
-        //         var i = (y * width + x) * 4;
-        //         data[i    ] = 0;
-        //         data[i + 1] = 0;
-        //         data[i + 2] = 0;
-        //         data[i + 3] = 0;
-        //         return this;
-        //     }
-        // };
-    },
 
     drawBoundsWithMask: function(extent, mask)
     {
@@ -167,7 +130,10 @@ Windy.prototype = {
         // this.windField.cloumnMax = 400;;
         // this.windField.rowMin = 100;;
         // this.windField.rowMax = 300;
-        // 鉴于高德、leaflet获取的边界都是southwest和northeast字段来表示，本例保持一致性
+
+        //！ 实际数据的范围，转换为像素范围
+        pixelboundx = pixelboundx;
+
         var extent = {
             southwest: {
                 lng: west,
@@ -184,7 +150,7 @@ Windy.prototype = {
 
         // var mapArea = (extent.south - extent.north) * (extent.west - extent.east);
         // var particleCount = Math.round(bounds.width * bounds.height * PARTICLE_MULTIPLIER * Math.pow(mapArea, 0.24));
-
+        this.windField.extent = extent;
         return extent;
     },
 
@@ -208,20 +174,21 @@ Windy.prototype = {
             if (particle.age >= 0) {
                 var x = particle.x,
                     y = particle.y;
-                if (!field.isInBound(x, y)) {
-                    particle.age = MAX_PARTICLE_AGE;
-                } else {
-                    var path = [];
-                    // path.push(x, y);
-                    uv = field.getIn(x, y);
-                    nextX = x +  SPEED_RATE * uv[0] / MAX_PARTICLE_AGE;
-                    nextY = y +  SPEED_RATE * uv[1] / MAX_PARTICLE_AGE;
-                    particle.path.push(nextX, nextY);
+                var uv = field.field(x, y);  // vector at current position
+                var m = uv[2];
+                if (m === null) {
+                    particle.age = MAX_PARTICLE_AGE;  // particle has escaped the grid, never to return...
+                }else {
+                    nextX = x +  SPEED_RATE * uv[0];
+                    nextY = y +  SPEED_RATE * uv[1];
+
+                    var coord = field.projectionpixelToLonlat([nextX,nextY]);
+                    particle.path.push(coord[0], coord[1]);
                     // path.push(nextX, nextY);
                     particle.x = nextX;
                     particle.y = nextY;
-                    instances.push(self._createLineInstance(self._map(particle.path), particle.age / particle.birthAge));
-                    // instances.push(self._createLineInstance(path, particle.age / particle.birthAge));
+                    // instances.push(self._createLineInstance(self._map(particle.path), particle.age / particle.birthAge));
+                    instances.push(self._createLineInstance(particle.path, particle.age / particle.birthAge));
                     particle.age++;
                 }
             }
@@ -236,6 +203,47 @@ Windy.prototype = {
         imageData[i + 1] = rgba[1];
         imageData[i + 2] = rgba[2];
         imageData[i + 3] = rgba[3];
+    },
+
+    createMaskfromEarth: function() {
+
+        // Create a detached canvas, ask the model to define the mask polygon, then fill with an opaque color.
+        var bdWidth = pixelboundx.width, bdHeight = pixelboundx.height;
+        var canvas = document.createElement('canvas');
+        canvas.width = bdWidth;
+        canvas.height = bdHeight;
+        var context = canvas.getContext('2d');
+        context.fillStyle = "rgba(255, 0, 0, 1)";
+        context.fill();
+
+        var imageData = context.getImageData(0, 0, bdWidth, bdHeight);
+        var data = imageData.data;  // layout: [r, g, b, a, r, g, b, a, ...]
+
+        return {
+            imageData: imageData,
+            canvas: canvas,
+            isVisible: function(x, y) {
+                var i = (y * width + x) * 4;
+                return data[i + 3] > 0;  // non-zero alpha means pixel is visible
+            },
+            set: function(x, y, rgba) {
+                var i = (y * bdWidth + x) * 4;
+                data[i    ] = rgba[0];
+                data[i + 1] = rgba[1];
+                data[i + 2] = rgba[2];
+                data[i + 3] = rgba[3];
+
+                return this;
+            }
+            // set: function(x, y, rgba) {
+            //     var i = (y * width + x) * 4;
+            //     data[i    ] = 0;
+            //     data[i + 1] = 0;
+            //     data[i + 2] = 0;
+            //     data[i + 3] = 0;
+            //     return this;
+            // }
+        };
     },
 
     //！ 传入经纬度矩形边界，生成风场数据中的行列坐标，取出值，更新颜色，写道canvas 的image中
@@ -284,16 +292,23 @@ Windy.prototype = {
         _primitives.removeAll();
         this.particles = [];
 
+        //! 定义并更新底图
+        var mask = this.createMaskfromEarth();
+
         //! 更新边界
         var bounds = this.getbounds();
 
-        //! 更新底图
-        //updateMaterial(viewer);
-        var bMask = this.createBoundMask(bounds);
-
+        //! 更新windField by pixelBounds
+        var x = pixelboundx.x;
+        while (x < pixelboundx.xMax) {
+            this.windField.interpolateColumn(x, mask);
+            x += 2;
+        }
 
         //! 绘制带底图的边界
-        this.drawBoundsWithMask(bounds, bMask);
+        var context = mask.canvas.getContext('2d');
+        context.putImageData(mask.imageData,0,0,10,10,mask.canvas.width, mask.canvas.height);
+        this.drawBoundsWithMask(bounds, mask.canvas.toDataURL());
 
 
         //！ 生成粒子绘制风场
@@ -396,21 +411,27 @@ Windy.prototype = {
         });
         this.lines = _primitives.add(linePrimitive);
     },
+
+    //！ 随机产生像素大小对应的px，py粒子
     randomParticle: function (particle) {
         var safe = 30,x, y;
 
         //! xy根据当前视野所属的bound行列号创建
         do {
-
-            x = Math.floor(Math.random() * (this.windField.cloumnMax - this.windField.cloumnMin) + this.windField.cloumnMin );
-            y = Math.floor(Math.random() * (this.windField.rowMax - this.windField.rowMin) + this.windField.rowMin);
-        } while (this.windField.getIn(x, y)[2] <= 0 && safe++ < 30);
+            x = Math.round(_.random(pixelboundx.x, pixelboundx.xMax));
+            y = Math.round(_.random(pixelboundx.y, pixelboundx.yMax));
+            // x = Math.floor(Math.random() * (this.windField.cloumnMax - this.windField.cloumnMin) + this.windField.cloumnMin );
+            // y = Math.floor(Math.random() * (this.windField.rowMax - this.windField.rowMin) + this.windField.rowMin);
+        } while (this.windField.field(x, y)[2] !== null && safe++ < 30);
 
         particle.x = x;
         particle.y = y;
         particle.age = Math.round(Math.random() * MAX_PARTICLE_AGE);//每一次生成都不一样
         particle.birthAge = particle.age;
-        particle.path = [x, y];
+
+        var coord = this.windField.projectionpixelToLonlat([x,y]);
+
+        particle.path = coord;
         return particle;
     },
 
