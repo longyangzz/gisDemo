@@ -2,10 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="fa8a07c9-307b-451a-850f-7a7600e3735d" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/libs/wind/micro.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/libs/wind/underscore.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/demo1-CesiumWind.html" beforeDir="false" afterPath="$PROJECT_DIR$/data/demo1-CesiumWind.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/wind/Particle.js" beforeDir="false" afterPath="$PROJECT_DIR$/libs/wind/Particle.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/libs/wind/WindField.js" beforeDir="false" afterPath="$PROJECT_DIR$/libs/wind/WindField.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/libs/wind/Windy.js" beforeDir="false" afterPath="$PROJECT_DIR$/libs/wind/Windy.js" afterDir="false" />
     </list>
@@ -18,11 +16,24 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/libs/wind/Windy.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="136">
-              <caret line="334" column="12" lean-forward="true" selection-start-line="334" selection-start-column="12" selection-end-line="334" selection-end-column="12" />
+            <state relative-caret-position="1544">
+              <caret line="199" column="16" selection-start-line="199" selection-start-column="4" selection-end-line="199" selection-end-column="16" />
+              <folding>
+                <element signature="e#5333#7094#0" />
+                <element signature="e#7129#8601#0" />
+                <element signature="e#9036#10622#0" />
+                <element signature="e#8946#10659#0" />
+                <element signature="e#10706#11677#0" />
+                <element signature="e#12344#13072#0" />
+                <element signature="e#13103#13224#0" />
+                <element signature="e#13738#14342#0" />
+                <element signature="e#14385#14725#0" />
+                <element signature="e#14767#15392#0" />
+                <element signature="e#15459#15693#0" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -35,8 +46,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/libs/wind/Particle.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="220">
-              <caret line="10" column="6" selection-start-line="10" selection-start-column="6" selection-end-line="10" selection-end-column="6" />
+            <state>
+              <caret selection-end-line="8" selection-end-column="2" />
             </state>
           </provider>
         </entry>
@@ -65,7 +76,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/libs/wind/product.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1269">
+            <state relative-caret-position="-1232">
               <caret line="1" column="40" selection-start-line="1" selection-start-column="40" selection-end-line="1" selection-end-column="40" />
               <folding>
                 <element signature="n#!!block;n#sinebowColor#0" />
@@ -74,11 +85,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/libs/wind/WindField.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="158">
-              <caret line="157" column="28" selection-start-line="157" selection-start-column="28" selection-end-line="157" selection-end-column="28" />
+            <state relative-caret-position="352">
+              <caret line="52" column="37" lean-forward="true" selection-start-line="52" selection-start-column="37" selection-end-line="52" selection-end-column="37" />
               <folding>
                 <element signature="e#62#379#0" />
               </folding>
@@ -89,7 +100,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/libs/wind/micro.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="136">
+            <state relative-caret-position="796">
               <caret line="361" selection-start-line="361" selection-end-line="362" selection-end-column="26" />
               <folding>
                 <element signature="e#19784#21846#0" />
@@ -147,16 +158,16 @@
       <find>scale</find>
       <find>point</find>
       <find>createBoundMask</find>
-      <find>setMaskValue</find>
       <find>createMaskfromEarth</find>
       <find>drawBoundsWithMask</find>
       <find>field</find>
       <find>interpolateColumn</find>
       <find>randomParticle</find>
       <find>projection</find>
-      <find>distortion</find>
       <find>evolveDraw</find>
       <find>distort</find>
+      <find>distortion</find>
+      <find>setMaskValue</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -172,8 +183,9 @@
         <option value="$PROJECT_DIR$/libs/wind/product.js" />
         <option value="$PROJECT_DIR$/data/demo1-CesiumWind.html" />
         <option value="$PROJECT_DIR$/libs/wind/micro.js" />
-        <option value="$PROJECT_DIR$/libs/wind/Windy.js" />
         <option value="$PROJECT_DIR$/libs/wind/WindField.js" />
+        <option value="$PROJECT_DIR$/libs/wind/Particle.js" />
+        <option value="$PROJECT_DIR$/libs/wind/Windy.js" />
       </list>
     </option>
   </component>
@@ -226,7 +238,7 @@
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1554713850855" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1554714201999" />
     <property name="last_opened_file_path" value="H:/2.code/gitspace/ExamplesforCesium-master" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
@@ -273,7 +285,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="69242000" />
+    <option name="totallyTimeSpent" value="69595000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-7" y="-7" width="1550" height="838" extended-state="6" />
@@ -448,16 +460,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/libs/wind/product.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1269">
-          <caret line="1" column="40" selection-start-line="1" selection-start-column="40" selection-end-line="1" selection-end-column="40" />
-          <folding>
-            <element signature="n#!!block;n#sinebowColor#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/gisDemo.iml">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
@@ -482,13 +484,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/libs/wind/Particle.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="220">
-          <caret line="10" column="6" selection-start-line="10" selection-start-column="6" selection-end-line="10" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/libs/wind/underscore.js">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
@@ -499,9 +494,19 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/libs/wind/WindField.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="352">
+          <caret line="52" column="37" lean-forward="true" selection-start-line="52" selection-start-column="37" selection-end-line="52" selection-end-column="37" />
+          <folding>
+            <element signature="e#62#379#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/libs/wind/micro.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="136">
+        <state relative-caret-position="796">
           <caret line="361" selection-start-line="361" selection-end-line="362" selection-end-column="26" />
           <folding>
             <element signature="e#19784#21846#0" />
@@ -509,19 +514,39 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/libs/wind/Windy.js">
+    <entry file="file://$PROJECT_DIR$/libs/wind/product.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="136">
-          <caret line="334" column="12" lean-forward="true" selection-start-line="334" selection-start-column="12" selection-end-line="334" selection-end-column="12" />
+        <state relative-caret-position="-1232">
+          <caret line="1" column="40" selection-start-line="1" selection-start-column="40" selection-end-line="1" selection-end-column="40" />
+          <folding>
+            <element signature="n#!!block;n#sinebowColor#0" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/libs/wind/WindField.js">
+    <entry file="file://$PROJECT_DIR$/libs/wind/Particle.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="158">
-          <caret line="157" column="28" selection-start-line="157" selection-start-column="28" selection-end-line="157" selection-end-column="28" />
+        <state>
+          <caret selection-end-line="8" selection-end-column="2" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/libs/wind/Windy.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1544">
+          <caret line="199" column="16" selection-start-line="199" selection-start-column="4" selection-end-line="199" selection-end-column="16" />
           <folding>
-            <element signature="e#62#379#0" />
+            <element signature="e#5333#7094#0" />
+            <element signature="e#7129#8601#0" />
+            <element signature="e#9036#10622#0" />
+            <element signature="e#8946#10659#0" />
+            <element signature="e#10706#11677#0" />
+            <element signature="e#12344#13072#0" />
+            <element signature="e#13103#13224#0" />
+            <element signature="e#13738#14342#0" />
+            <element signature="e#14385#14725#0" />
+            <element signature="e#14767#15392#0" />
+            <element signature="e#15459#15693#0" />
           </folding>
         </state>
       </provider>

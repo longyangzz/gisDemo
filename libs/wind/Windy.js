@@ -366,23 +366,7 @@ Windy.prototype = {
             this.lines.destroy();
         }
     },
-    //求路径上点
-    _map: function (arr) {
-        var length = arr.length,
-            field = this.windField,
-            dx = field.dx,
-            dy = field.dy,
-            west = field.west,
-            south = field.south,
-            newArr = [];
-        for (var i = 0; i <= length - 2; i += 2) {
-            newArr.push(
-                west + arr[i] * dx,
-                south + arr[i + 1] * dy
-            )
-        }
-        return newArr;
-    },
+
     _createLineInstance: function (positions, ageRate) {
         var colors = [],
             length = positions.length,
