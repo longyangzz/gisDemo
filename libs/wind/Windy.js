@@ -184,14 +184,21 @@ Windy.prototype = {
                 if (m === null) {
                     particle.age = MAX_PARTICLE_AGE;  // particle has escaped the grid, never to return...
                 }else {
+
+
                     nextX = x +  SPEED_RATE * uv[0];
                     nextY = y +  SPEED_RATE * uv[1];
 
                     var coord = field.projectionpixelToLonlat([nextX,nextY]);
-                    particle.path.push(coord[0], coord[1]);
+                    var startPt = Cesium.Cartesian3.fromDegrees(field.extent.southwest.lng, field.extent.southwest.lat);
+                    var temp = Cesium.Cartesian3.fromDegrees(coord[0], coord[1]);
+
+                    coord[0] = temp.x - startPt.x;
+                    coord[1] = temp.y - startPt.y;
+                    particle.path.push(coord[0], coord[1], 100);
                     // path.push(nextX, nextY);
-                    particle.x = nextX;
-                    particle.y = nextY;
+                     particle.x = nextX;
+                     particle.y = nextY;
                     // instances.push(self._createLineInstance(self._map(particle.path), particle.age / particle.birthAge));
                     instances.push(self._createLineInstance(particle.path, particle.age / particle.birthAge));
                     particle.age++;
@@ -375,19 +382,48 @@ Windy.prototype = {
     _createLineInstance: function (positions, ageRate) {
         var colors = [],
             length = positions.length,
-            count = length / 2;
-        for (var i = 0; i < length; i++) {
+            count = length / 3;
+        var link = [];
+        for (var i = 0; i < count - 1; i++) {
             //colors.push(Cesium.Color.WHITE.withAlpha(i / count * ageRate * BRIGHTEN));
             colors.push(Cesium.Color.fromBytes(85,85,85,250));
+            link.push(i);
+            link.push(i+1);
         }
-        return new Cesium.GeometryInstance({
-            geometry: new Cesium.PolylineGeometry({
-                positions: Cesium.Cartesian3.fromDegreesArray(positions),
-                colors: colors,
-                width: 1.5,
-                colorsPerVertex: true
-            })
+        var geometry1 = new Cesium.Geometry({
+            attributes: {
+                position: new Cesium.GeometryAttribute({
+                    componentDatatype: Cesium.ComponentDatatype.DOUBLE,
+                    componentsPerAttribute: 3,
+                    values: positions
+                })
+            },
+            indices: link,
+            primitiveType: Cesium.PrimitiveType.LINES  ,
+            boundingSphere: Cesium.BoundingSphere.fromVertices(positions)
         });
+
+        //箭头(放置到起点经纬度位置)
+        var modelMatrixWhereTo = Cesium.Transforms.eastNorthUpToFixedFrame(
+            Cesium.Cartesian3.fromDegrees(this.windField.extent.southwest.lng, this.windField.extent.southwest.lat, 0.00000));
+        var instance0 = new Cesium.GeometryInstance({
+            geometry: geometry1,
+            modelMatrix: modelMatrixWhereTo,
+            attributes: {
+                color: Cesium.ColorGeometryInstanceAttribute.fromColor(Cesium.Color.RED)
+            }
+        });
+
+        return instance0;
+
+        // return new Cesium.GeometryInstance({
+        //     geometry: new Cesium.PolylineGeometry({
+        //         positions: Cesium.Cartesian3.fromDegreesArray(positions),
+        //         colors: colors,
+        //         width: 1.5,
+        //         colorsPerVertex: true
+        //     })
+        // });
     },
     _drawLines: function (lineInstances) {
         this.removeLines();
@@ -419,12 +455,12 @@ Windy.prototype = {
         particle.birthAge = particle.age;
 
         var coord = this.windField.projectionpixelToLonlat([x,y]);
-        // var startPt = Cesium.Cartesian3.fromDegrees(this.windField.extent.southwest.lng, this.windField.extent.southwest.lat);
-        // var temp = Cesium.Cartesian3.fromDegrees(coord[0], coord[1]);
-        //
-        // coord[0] = temp.x - startPt.x;
-        // coord[1] = temp.y - startPt.y;
+        var startPt = Cesium.Cartesian3.fromDegrees(this.windField.extent.southwest.lng, this.windField.extent.southwest.lat);
+        var temp = Cesium.Cartesian3.fromDegrees(coord[0], coord[1]);
 
+        coord[0] = temp.x - startPt.x;
+        coord[1] = temp.y - startPt.y;
+        coord[2] = 100;
         particle.path = coord;
         return particle;
     },
