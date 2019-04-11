@@ -100,11 +100,11 @@
             return null;
         },
 
-        distort: function (projection, λ, φ, x, y, scale, wind) {
+        distort: function (projection, λ, φ, x, y, scale, wind, extent) {
             var u = wind[0] * scale;
             var v = wind[1] * scale;
-            // var d = µ.distortion(projection, λ, φ, x, y);
-            var d= [0.2697523332221087, -0, 0.38301513348591876, -3.8055672872714137];
+            var d = µ.distortion(projection, λ, φ, x, y, extent);
+            // var d= [0.2697523332221087, -0, 0.38301513348591876, -3.8055672872714137];
             // Scale distortion vectors by u and v, then add.
             wind[0] = d[0] * u + d[2] * v;
             wind[1] = d[1] * u + d[3] * v;
@@ -112,12 +112,29 @@
         },
 
         interpolateColumn: function(x, mask) {
+            var extent = {
+                south: µ.deg2rad(this.extent.southwest.lat),
+                north: µ.deg2rad(this.extent.northeast.lat),
+                east: µ.deg2rad(this.extent.northeast.lng),
+                west: µ.deg2rad(this.extent.southwest.lng),
+                width: pixelboundx.width,
+                height: pixelboundx.height
+            };
+            // var extent = {
+            //     south: -0.2711906178210634,
+            //     north: 0.2712010228242511,
+            //     east: 0.22819744277225945,
+            //     west: -0.2281618416237188,
+            //     width: pixelboundx.width,
+            //     height: pixelboundx.height
+            // };
             var column = [];
             var velocityScale = pixelboundx.height * 1/ 6000;
             for (var y = pixelboundx.y; y <= pixelboundx.yMax; y += 2) {
 
                 point[0] = x; point[1] = y;
                 var coord = this.projectionpixelToLonlat(point);
+                // var coord = µ.invert(x, y, extent);
                 var color = TRANSPARENT_BLACK;
                 var wind = null;
                 if (coord) {
@@ -127,7 +144,9 @@
                         var scalar = null;
                         if (wind) {
                             var projection = [-0.03921065394444267, 2.9619717605938263, 0.6173005920749751, -4.599962060246475];
-                            // wind = this.distort(projection, λ, φ, x, y, velocityScale, wind);
+
+
+                            // wind = this.distort(projection, λ, φ, x, y, velocityScale, wind, extent);
                             scalar = wind[2];
                         }
 

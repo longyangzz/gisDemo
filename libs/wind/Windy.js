@@ -126,6 +126,11 @@ Windy.prototype = {
         this.windField.rowMin = Math.floor((south-stsouth) / dy);;
         this.windField.rowMax = Math.floor((north-stsouth) / dy);;
 
+        //！ 经纬度转换为投影坐标
+        //! 箭头起点位置
+        //! 初始化一个坐标转换类，根据箭头经纬坐标，转换为大地坐标，进行长度计算
+        var wgs84XY = Cesium.Cartesian3.fromDegrees(east, north);
+        var startPt = Cesium.Cartesian3.fromDegrees(west, south);
         // this.windField.cloumnMin = 200;
         // this.windField.cloumnMax = 400;;
         // this.windField.rowMin = 100;;
@@ -414,6 +419,11 @@ Windy.prototype = {
         particle.birthAge = particle.age;
 
         var coord = this.windField.projectionpixelToLonlat([x,y]);
+        // var startPt = Cesium.Cartesian3.fromDegrees(this.windField.extent.southwest.lng, this.windField.extent.southwest.lat);
+        // var temp = Cesium.Cartesian3.fromDegrees(coord[0], coord[1]);
+        //
+        // coord[0] = temp.x - startPt.x;
+        // coord[1] = temp.y - startPt.y;
 
         particle.path = coord;
         return particle;

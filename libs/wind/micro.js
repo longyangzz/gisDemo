@@ -331,6 +331,71 @@ var µ = function() {
         return d.promise;
     }
 
+    var deg2rad = function deg2rad(deg) {
+        return deg / 180 * Math.PI;
+    };
+
+    var rad2deg = function rad2deg(ang) {
+        return ang / (Math.PI / 180.0);
+    };
+
+    var mercY = function mercY(lat) {
+        return Math.log(Math.tan(lat / 2 + Math.PI / 4));
+    };
+
+    var invert = function invert(x, y, windy) {
+        var mapLonDelta = windy.east - windy.west;
+        var mapLatDelta = windy.south - windy.north;
+        var lat = rad2deg(windy.north) + y / windy.height * rad2deg(mapLatDelta);
+        var lon = rad2deg(windy.west) + x / windy.width * rad2deg(mapLonDelta);
+        return [lon, lat];
+    };
+
+    //！ 模仿earth计算投影
+    var earthproject = function earthproject(lonlat) {
+        lonlat = [33.41423243768431, 4.798489525812814];
+        var ka = Math.PI;
+        var La = ka / 180;
+        var Ea = 2 * ka;
+
+        function t(t, e) {
+            var r = Math.cos(t)
+                , u = Math.cos(e)
+                , i = 1;
+            return [i * u * Math.sin(t), i * Math.sin(e)]
+        }
+
+        function a(e, r) {
+            return e = n(e, r),
+                t(e[0], e[1])
+        }
+
+        function n (t, e) {
+            return t += 4.1887902047863905,
+                [t > ka ? t - Ea : -ka > t ? t + Ea : t, e]
+        }
+
+        var n = a(lonlat[0] * La, lonlat[1] * La);
+
+        var h = 274.95;
+        var c = 305.5;
+        var s = 361;
+         var temp =   [n[0] * h + c, s - n[1] * h]
+        return temp;
+    };
+
+    var project = function project(lat, lon, windy) {
+        var ymin = mercY(windy.south);
+        var ymax = mercY(windy.north);
+        var xFactor = windy.width / (windy.east - windy.west);
+        var yFactor = windy.height / (ymax - ymin);
+
+        var y = mercY(deg2rad(lat));
+        var x = (deg2rad(lon) - windy.west) * xFactor;
+        var y = (ymax - y) * yFactor;
+        return [x, y];
+    };
+
     /**
      * Returns the distortion introduced by the specified projection at the given point.
      *
@@ -354,13 +419,14 @@ var µ = function() {
      *
      * @returns {Array} array of scaled derivatives [dx/dλ, dy/dλ, dx/dφ, dy/dφ]
      */
-    function distortion(projection, λ, φ, x, y) {
+    function distortion(projection, λ, φ, x, y, extent) {
         var hλ = λ < 0 ? H : -H;
         var hφ = φ < 0 ? H : -H;
-        // var pλ = projection([λ + hλ, φ]);
-        // var pφ = projection([λ, φ + hφ]);
-        var pλ = [25,315];
-        var pφ = [25,315];
+
+
+
+        var pλ = earthproject([λ + hλ, φ]);
+        var pφ = earthproject([λ, φ + hφ]);
 
         // Meridian scale factor (see Snyder, equation 4-3), where R = 1. This handles issue where length of 1° λ
         // changes depending on φ. Without this, there is a pinching effect at the poles.
@@ -589,7 +655,10 @@ var µ = function() {
         loadJson: loadJson,
         distortion: distortion,
         newAgent: newAgent,
-        parse: parse
+        parse: parse,
+        deg2rad: deg2rad,
+        rad2deg: rad2deg,
+        invert: invert
     };
 
 }();
