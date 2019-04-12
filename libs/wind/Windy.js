@@ -197,8 +197,9 @@ Windy.prototype = {
                     // var startPt = Cesium.Cartesian3.fromDegrees(field.extent.southwest.lng, field.extent.southwest.lat);
                     // var temp = Cesium.Cartesian3.fromDegrees(coord[0], coord[1]);
 
-                    coord[0] = particle.path[0] +  SPEED_RATE * uv[0] * 10000 + 5000;
-                    coord[1] = particle.path[1] +  SPEED_RATE * uv[1] * 10000 + 5000;
+                    var len = particle.path.length;
+                    coord[0] = particle.path[len-3] +  SPEED_RATE * uv[0] * 100 + 3000;
+                    coord[1] = particle.path[len-2] +  SPEED_RATE * uv[1] * 100 + 3000;
                     particle.path.push(coord[0], coord[1], 0);
                     // path.push(nextX, nextY);
                      particle.x = nextX;
