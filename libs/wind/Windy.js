@@ -190,17 +190,24 @@ Windy.prototype = {
                     nextY = y +  SPEED_RATE * uv[1];
 
                     var coord = field.projectionpixelToLonlat([nextX,nextY]);
-                    var startPt = Cesium.Cartesian3.fromDegrees(field.extent.southwest.lng, field.extent.southwest.lat);
-                    var temp = Cesium.Cartesian3.fromDegrees(coord[0], coord[1]);
+                    var coordTransform = new ProjectionTransfor(2, Math.round(field.extent.southwest.lng / 15) * 15, 0, 500000, 0);
+                    var startPt = coordTransform.BLtoXY(field.extent.southwest.lng, field.extent.southwest.lat);
+                    coordTransform = new ProjectionTransfor(2, Math.round(coord[0] / 15) * 15, 0, 500000, 0);
+                    var temp = coordTransform.BLtoXY(coord[0], coord[1]);
+                    // var startPt = Cesium.Cartesian3.fromDegrees(field.extent.southwest.lng, field.extent.southwest.lat);
+                    // var temp = Cesium.Cartesian3.fromDegrees(coord[0], coord[1]);
 
-                    coord[0] = temp.x - startPt.x;
-                    coord[1] = temp.y - startPt.y;
-                    particle.path.push(coord[0], coord[1], 100);
+                    coord[0] = particle.path[0] +  SPEED_RATE * uv[0] * 10000 + 5000;
+                    coord[1] = particle.path[1] +  SPEED_RATE * uv[1] * 10000 + 5000;
+                    particle.path.push(coord[0], coord[1], 0);
                     // path.push(nextX, nextY);
                      particle.x = nextX;
                      particle.y = nextY;
+
+                    var modelMatrixWhereTo = Cesium.Transforms.eastNorthUpToFixedFrame(
+                        Cesium.Cartesian3.fromDegrees(particle.sx, particle.sy, 100.00000));
                     // instances.push(self._createLineInstance(self._map(particle.path), particle.age / particle.birthAge));
-                    instances.push(self._createLineInstance(particle.path, particle.age / particle.birthAge));
+                    instances.push(self._createLineInstance(particle.path, particle.age / particle.birthAge, modelMatrixWhereTo));
                     particle.age++;
                 }
             }
@@ -379,7 +386,7 @@ Windy.prototype = {
         }
     },
 
-    _createLineInstance: function (positions, ageRate) {
+    _createLineInstance: function (positions, ageRate, modelMatrixWhereTo) {
         var colors = [],
             length = positions.length,
             count = length / 3;
@@ -404,8 +411,8 @@ Windy.prototype = {
         });
 
         //箭头(放置到起点经纬度位置)
-        var modelMatrixWhereTo = Cesium.Transforms.eastNorthUpToFixedFrame(
-            Cesium.Cartesian3.fromDegrees(this.windField.extent.southwest.lng, this.windField.extent.southwest.lat, 0.00000));
+        // var modelMatrixWhereTo = Cesium.Transforms.eastNorthUpToFixedFrame(
+        //     Cesium.Cartesian3.fromDegrees(this.windField.extent.southwest.lng, this.windField.extent.southwest.lat, 100.00000));
         var instance0 = new Cesium.GeometryInstance({
             geometry: geometry1,
             modelMatrix: modelMatrixWhereTo,
@@ -451,16 +458,23 @@ Windy.prototype = {
 
         particle.x = x;
         particle.y = y;
+
         particle.age = Math.round(Math.random() * MAX_PARTICLE_AGE);//每一次生成都不一样
         particle.birthAge = particle.age;
 
         var coord = this.windField.projectionpixelToLonlat([x,y]);
-        var startPt = Cesium.Cartesian3.fromDegrees(this.windField.extent.southwest.lng, this.windField.extent.southwest.lat);
-        var temp = Cesium.Cartesian3.fromDegrees(coord[0], coord[1]);
+        particle.sx = coord[0];
+        particle.sy = coord[1];
+        var coordTransform = new ProjectionTransfor(2, Math.round(this.windField.extent.southwest.lng / 15) * 15, 0, 500000, 0);
+        var startPt = coordTransform.BLtoXY(this.windField.extent.southwest.lng, this.windField.extent.southwest.lat);
+        coordTransform = new ProjectionTransfor(2, Math.round(coord[0] / 15) * 15, 0, 500000, 0);
+        var temp = coordTransform.BLtoXY(coord[0], coord[1]);
+        //var startPt = Cesium.Cartesian3.fromDegrees(this.windField.extent.southwest.lng, this.windField.extent.southwest.lat);
+        // var temp = Cesium.Cartesian3.fromDegrees(coord[0], coord[1]);
 
-        coord[0] = temp.x - startPt.x;
-        coord[1] = temp.y - startPt.y;
-        coord[2] = 100;
+        coord[0] = 0;
+        coord[1] = 0;
+        coord[2] = 0;
         particle.path = coord;
         return particle;
     },
@@ -469,6 +483,8 @@ Windy.prototype = {
     particleByPos: function (particle, x,y) {
         particle.x = x;
         particle.y = y;
+        particle.sx = x;
+        particle.sy = y;
         particle.age = Math.round(Math.random() * MAX_PARTICLE_AGE);//每一次生成都不一样
         particle.birthAge = particle.age;
         particle.path = [x, y];

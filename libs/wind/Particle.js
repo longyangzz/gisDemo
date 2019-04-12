@@ -6,6 +6,8 @@ var Particle = function () {
     this.age = null;
     this.birthAge = null;
     this.path = null;
+    this.sx = null;
+    this.sy = null;
 };
 
 /*
