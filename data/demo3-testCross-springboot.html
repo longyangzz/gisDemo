@@ -1,0 +1,149 @@
+﻿<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <title>CesiumWind-Cesium风场</title>
+    <link href="../Libs/Cesium/Widgets/widgets.css" rel="stylesheet" />
+    <script src="../Libs/Cesium/Cesium.js"></script>
+    <script src="1-2ImageryProvider-WebExtend.js"></script>
+    <script src="../Libs/jquery.min.js"></script>
+    <script src="../Libs/wind/micro.js"></script>
+
+    <script src="../libs/wind/underscore.js"></script>
+    <script src="../Libs/wind/Particle.js"></script>
+    <script src="../Libs/wind/WindField.js"></script>
+    <script src="../Libs/wind/product.js"></script>
+    <script src="../Libs/wind/Windy.js"></script>
+    <script src="../Libs/wind/globeMaterials.js"></script>
+
+    <style>
+        html, body, #cesiumContainer {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        #menu {
+            position: absolute;
+            top: 80px;
+            left: 10px;
+            z-index: 999;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="cesiumContainer" class="fullSize"></div>
+    <div id="creditContainer" style="display: none;"></div>
+    <span style="white-space:pre"></span>
+
+    <script>
+    var mtdt = new Cesium.WebMapTileServiceImageryProvider({
+        url: 'http://t0.tianditu.com/img_w/wmts?',
+        layer: 'img',
+        style: 'default',
+        format: 'tiles',
+        tileMatrixSetID: 'w',
+        credit: new Cesium.Credit('天地图全球影像服务'),
+        maximumLevel: 18
+    });
+    var GoogleMap = ImageryProviderWebExtendTool.createGoogleMapsByUrl(Cesium, { url: "http://mt1.google.cn/vt/lyrs=s&hl=zh-CN&x={x}&y={y}&z={z}" });
+
+    //! 地形
+    var imageryProvider = new Cesium.WebMapTileServiceImageryProvider({
+        url: "http://t0.tianditu.com/ter_w/wmts?service=wmts&request=GetTile&version=1.0.0&LAYER=ter&tileMatrixSet=w&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&style=default&format=tiles&tk=46a08ed576eb9ad93d6a465a55544a5b",
+        layer: "tdtBasicLayer",
+        style: "default",
+        format: "image/jpeg",
+        tileMatrixSetID: "GoogleMapsCompatible",
+        show: true
+    });
+
+    //！ 影像
+    var yxBasicLayer = new Cesium.WebMapTileServiceImageryProvider({
+        //http://t2.tianditu.gov.cn/img_w
+        url: "http://{s}.tianditu.gov.cn/img_w/wmts?service=wmts&request=GetTile&version=1.0.0&LAYER=img&tileMatrixSet=w&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&style=default&format=tiles&tk=46a08ed576eb9ad93d6a465a55544a5b",
+        layer: "tdtBasicLayer",
+        style: "default",
+        format: "image/jpeg",
+        tileMatrixSetID: "GoogleMapsCompatible",
+        subdomains: ['t0','t1','t2','t3','t4','t5','t6','t7'],
+        show: true,
+        maximumLevel: 18
+    });
+
+    //！ 道路
+    var dlBasicLayer = new Cesium.WebMapTileServiceImageryProvider({
+        url: "http://t2.tianditu.gov.cn/vec_w/wmts?service=wmts&request=GetTile&version=1.0.0&LAYER=vec&tileMatrixSet=w&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&style=default&format=tiles&tk=46a08ed576eb9ad93d6a465a55544a5b",
+        layer: "tdtVecBasicLayer",
+        style: "default",
+        format: "image/jpeg",
+        tileMatrixSetID: "GoogleMapsCompatible",
+        show: true
+    });
+
+    //！文字注记
+    var textBasicLayer = new Cesium.WebMapTileServiceImageryProvider({
+        url: "http://{s}.tianditu.gov.cn/cia_w/wmts?service=wmts&request=GetTile&version=1.0.0&LAYER=cia&tileMatrixSet=w&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&style=default.jpg&tk=46a08ed576eb9ad93d6a465a55544a5b",
+        layer: "cia",
+        style: "default.jpg",
+        tileMatrixSetID: "GoogleMapsCompatible",
+        format: "tiles",
+        subdomains: ['t0','t1','t2','t3','t4','t5','t6','t7'],
+        maximumLevel: 18
+    });
+
+    var viewer = new Cesium.Viewer('cesiumContainer', {
+        imageryProvider: yxBasicLayer,
+        baseLayerPicker: false,       // 基本图层控制,确定imageryProvider是否生效，false则生效，true则selectedImageryProviderViewModel生效
+        geocoder: false,              // 搜索控制
+        homeButton: true,            // 返回初始状态控制
+        navigationHelpButton: false,  // 帮助控制
+        animation: false,
+        timeline: false,                //时间轴
+        contextOptions: { webgl: { preserveDrawingBuffer: true, failIfMajorPerformanceCaveat: false } },
+        scene3DOnly: false,             //影响是否显示2，3维切换
+        infoBox: false,
+        fullscreenButton: false, // 是否显示全屏按钮
+        sceneModePicker: true,   // 模式控制（2D，3D，2.5D）
+        sceneMode : Cesium.SceneMode.SCENE3D,//初始场景模式 为二维
+        showInspector: true,
+
+    });
+    //viewer.scene.fxaa = false;
+    // viewer.scene.globe.enableLighting = true;
+    //viewer.scene.globe.maximumScreenSpaceError
+    function RaingetNcDataFiltered(){
+
+        //! 本地
+        var ncPath = "F:\\DCLW_SVN\\山洪分析\\branches\\WebFlood\\base\\FloodAnalysis\\src\\main\\webapp\\WEB-INF\\staticFile\\NC\\whter.nc";
+        var ncurl =  "http://localhost:8080/NetcdfServer/" + "ContourPlane/getNcDataFilteredByTime";
+
+        //！ 栾川基地
+        // var ncPath = "D:\\DCLW\\NC\\whter.nc";
+        // var ncurl =  "http://117.159.194.131:8080/NetcdfServer" + "ContourPlane/getNcDataFilteredByTime";
+
+        //！ 公司服务器
+        // var ncPath = "D:\\apache-tomcat-9.0.12-windows-x64\\apache-tomcat-9.0.12\\webapps\\NetcdfServer\\WEB-INF\\staticFile\\NC\\whter.nc";
+        // var ncurl =  "http://111.198.29.34:8099/NetcdfServer" + "ContourPlane/getNcDataFilteredByTime";
+
+        $.ajax({
+            type : "POST",
+            // url: "floodForecast/getNcDataFiltered",
+            url: ncurl,
+            data : JSON.stringify({"FilePath": ncPath}),
+            dataType: 'json',
+            contentType:'application/json;charset=UTF-8',
+            success: function (data) {
+                var res = data;
+
+            }
+        });
+    }
+    RaingetNcDataFiltered();
+    </script>
+</body>
+</html>
