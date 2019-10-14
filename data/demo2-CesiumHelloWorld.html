@@ -41,16 +41,6 @@
     <span style="white-space:pre"></span>
 
     <script>
-    var mtdt = new Cesium.WebMapTileServiceImageryProvider({
-        url: 'http://t0.tianditu.com/img_w/wmts?',
-        layer: 'img',
-        style: 'default',
-        format: 'tiles',
-        tileMatrixSetID: 'w',
-        credit: new Cesium.Credit('天地图全球影像服务'),
-        maximumLevel: 18
-    });
-    var GoogleMap = ImageryProviderWebExtendTool.createGoogleMapsByUrl(Cesium, { url: "http://mt1.google.cn/vt/lyrs=s&hl=zh-CN&x={x}&y={y}&z={z}" });
 
     //! 地形
     var imageryProvider = new Cesium.WebMapTileServiceImageryProvider({
@@ -88,16 +78,24 @@
     //！文字注记
     var textBasicLayer = new Cesium.WebMapTileServiceImageryProvider({
         url: "http://{s}.tianditu.gov.cn/cia_w/wmts?service=wmts&request=GetTile&version=1.0.0&LAYER=cia&tileMatrixSet=w&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&style=default.jpg&tk=46a08ed576eb9ad93d6a465a55544a5b",
-        layer: "cia",
+        layer: "tdtAnnoLayer",
         style: "default.jpg",
         tileMatrixSetID: "GoogleMapsCompatible",
-        format: "tiles",
         subdomains: ['t0','t1','t2','t3','t4','t5','t6','t7'],
-        maximumLevel: 18
+        maximumLevel: 18,
     });
 
+    //! 自定义
+
+    var serverurl = "http://111.198.29.34:8060/arcgis/rest/services/HSFXHNNew/HNMapWMTS/MapServer";
+    //serverurl = "http://map.geoq.cn/ArcGIS/rest/services/ChinaOnlineStreetPurplishBlue/MapServer";
+
+    var SelfBasicLayer = new Cesium.ArcGisMapServerImageryProvider({
+        url: serverurl
+    })
+
     var viewer = new Cesium.Viewer('cesiumContainer', {
-        imageryProvider: yxBasicLayer,
+        imageryProvider: SelfBasicLayer,
         baseLayerPicker: false,       // 基本图层控制,确定imageryProvider是否生效，false则生效，true则selectedImageryProviderViewModel生效
         geocoder: false,              // 搜索控制
         homeButton: true,            // 返回初始状态控制
@@ -116,7 +114,8 @@
     //viewer.scene.fxaa = false;
     // viewer.scene.globe.enableLighting = true;
     //viewer.scene.globe.maximumScreenSpaceError
-    viewer.scene.globe.baseColor = new Cesium.Color(0.32941176470588235, 0.41568627450980394, 0.3254901960784314, 1);
+    viewer.scene.globe.skyAtmosphere = false;
+    viewer.scene.globe.baseColor = Cesium.Color.WHITE;
     var handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
 
     handler.setInputAction(function(wheelment){
@@ -128,22 +127,12 @@
     },Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
 
     var layer = viewer.imageryLayers;
-    var  notelayer = layer.addImageryProvider(textBasicLayer, 1);
-    notelayer.colorToAlphaThreshold = 0.004;
-    // {
-    //
-    //     var serverurl = "http://111.198.29.34:8060/arcgis/rest/services/HSFXHNNew/HNDITUMap/MapServer";
-    //     var layersIndex = 1;
-    //
-    //     var layerCur = layer.addImageryProvider(new Cesium.ArcGisMapServerImageryProvider({
-    //         url: serverurl
-    //     }));
-    //
-    //     layerCur.alpha = 1;
-    //     layerCur.show = true;
-    //
-    // }
+    //var  notelayer = layer.addImageryProvider(textBasicLayer);
 
+    viewer.scene.camera.flyTo({
+        destination: Cesium.Cartesian3.fromDegrees(112.772233, 34.152091, 950000.000000),
+        duration: 2
+    });
     </script>
 </body>
 </html>
