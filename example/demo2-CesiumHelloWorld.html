@@ -87,12 +87,50 @@
 
     //! 自定义
 
-    var serverurl = "http://111.198.29.34:8060/arcgis/rest/services/HSFXHNNew/HNMapWMTS/MapServer";
+    var serverurl = "http://hsfx.bjdclw.com:8060/arcgis/rest/services/HSFXHNNew/HNMapWMTS/MapServer";
     //serverurl = "http://map.geoq.cn/ArcGIS/rest/services/ChinaOnlineStreetPurplishBlue/MapServer";
 
-    var SelfBasicLayer = new Cesium.ArcGisMapServerImageryProvider({
-        url: serverurl
+    //！专用的wtms底图
+    var wms3857 = new Cesium.ArcGisMapServerImageryProvider({
+        url: "http://localhost:6080/arcgis/rest/services/test/测试wms3857/MapServer",
+        layers : '0,1',
+        parameters : {
+            transparent : true,
+            format : 'image/png'
+        },
+        // tileWidth: 926,
+        // tileHeight: 880
     })
+
+    //！ wms图层
+    var SelfBasicLayer = new Cesium.ArcGisMapServerImageryProvider({
+        url: serverurl,
+        layers : '1,2,3,4',
+        parameters : {
+            transparent : true,
+            format : 'image/png'
+        },
+        tileWidth: 926,
+        tileHeight: 880
+    })
+
+    //！ 通用wms服务
+    // var SelfBasicLayer = new Cesium.WebMapServiceImageryProvider({
+    //     url : 'http://localhost:6080/arcgis/services/test/测试wms3857/MapServer/WmsServer',
+    //     layers : '0',
+    //     parameters : {
+    //         transparent : true,
+    //         format : 'image/png'
+    //     },
+    //     tileWidth: 926,
+    //     tileHeight: 880
+    // });
+
+    // var SelfBasicLayer = new Cesium.WebMapTileServiceImageryProvider({
+    //     url : 'http://localhost:6080/arcgis/rest/services/test/测试wtms3857/MapServer/WMTS',
+    //     layer : '1',
+    //     format : 'image/png',
+    // });
 
     var viewer = new Cesium.Viewer('cesiumContainer', {
         imageryProvider: SelfBasicLayer,
@@ -109,13 +147,10 @@
         sceneModePicker: true,   // 模式控制（2D，3D，2.5D）
         sceneMode : Cesium.SceneMode.SCENE3D,//初始场景模式 为二维
         showInspector: true,
+        //mapProjection: new Cesium.WebMercatorProjection()
 
     });
-    //viewer.scene.fxaa = false;
-    // viewer.scene.globe.enableLighting = true;
-    //viewer.scene.globe.maximumScreenSpaceError
-    viewer.scene.globe.skyAtmosphere = false;
-    viewer.scene.globe.baseColor = Cesium.Color.WHITE;
+
     var handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
 
     handler.setInputAction(function(wheelment){
@@ -127,7 +162,7 @@
     },Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
 
     var layer = viewer.imageryLayers;
-    //var  notelayer = layer.addImageryProvider(textBasicLayer);
+    layer.addImageryProvider(wms3857);
 
     viewer.scene.camera.flyTo({
         destination: Cesium.Cartesian3.fromDegrees(112.772233, 34.152091, 950000.000000),
