@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no"
+    />
+    <meta name="description" content="CZML Polygon" />
+    <meta name="cesium-sandcastle-labels" content="CZML" />
+    <title>Cesium Demo</title>
+    <script type="text/javascript" src="../Sandcastle-header.js"></script>
+    <script type="text/javascript" src="./GltfManager.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.js" type="text/javascript"></script>
+    <script
+      type="text/javascript"
+      src="../../../Build/CesiumUnminified/Cesium.js"
+      nomodule
+    ></script>
+    <script type="module" src="../load-cesium-es6.js"></script>
+
+    <script type="module" src="./RivlUnitImageProvider.js"></script>
+  </head>
+  <body
+    class="sandcastle-loading"
+    data-sandcastle-bucket="bucket-requirejs.html"
+  >
+    <style>
+      @import url(../templates/bucket.css);
+    </style>
+    <div id="cesiumContainer" class="fullSize"></div>
+    <div id="loadingOverlay"><h1>Loading...</h1></div>
+    <div id="toolbar"></div>
+
+    <script id="cesium_sandcastle_script">
+      function LoadRectangleWithImage(viewer) {
+        viewer.entities.add({
+          id: "Textured rectangle, zIndex 3",
+          rectangle: {
+            coordinates: Cesium.Rectangle.fromDegrees(118.286734, 36.459822, 118.472960, 36.594144),
+            material: "1-0.png",
+            zIndex: 3,
+          },
+        });
+
+
+        viewer.entities.add({
+          rectangle : {
+            coordinates : Cesium.Rectangle.fromDegrees(118.286734, 36.459822, 118.472960, 36.594144),
+            // material : new Cesium.StripeMaterialProperty({
+            //   evenColor: Cesium.Color.WHITE,
+            //   oddColor: Cesium.Color.BLUE,
+            //   repeat: 5
+            // }),
+            fill: false,
+            outlineWidth: 5,
+            outline: true
+          }
+        });
+      }
+
+      function loadAllRivlUnitPngTile(viewer, showbound) {
+        if(showbound == undefined){
+          showbound = false;
+        }
+
+        var headers = {
+          "Authorization": "TokeneyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJDU2hlaWxvbmdqaWFuZzEyMzQ1NiJ9.1mU74fCjTy9hfA_y_d_II04ddSzBBKPPWhdS5q7NnwU"
+        };
+        $.ajaxPrefilter(function( options, originalOptions, jqXHR ) {
+          options.headers = headers;
+        });
+
+        var that = this;
+
+        //调用山东接口，循环一下
+        $.ajax({
+          async: false,
+          url: "http://hsfx.bjdclw.com:8099/FloodAnalysis/position/getAllUnit",
+          type: "POST",
+          data: JSON.stringify({}),
+          dataType: 'json',
+          contentType: 'application/json;charset=UTF-8',
+          success: function(data){
+            debugger
+            var result = JSON.parse(data);
+
+            if(result != undefined && result[0] != undefined ){
+              for (var i = 0; i != result[0].length; ++i){
+                var west = result[0][i].left;
+                var south = result[0][i].bottom;
+                var east = result[0][i].right;
+                var north = result[0][i].top;
+                var group = result[0][i].GroupID;
+                var unit = result[0][i].UNITCD;
+                var ServerUrl = result[0][i].ServerUrl;
+                var level = 0;
+
+                if(group == null || group == undefined || ServerUrl == undefined){
+                  continue;
+                }
+
+                var pnghttp = ServerUrl.replace("HsfxServer", "HSFXResources") + "/staticFile/images/heilongjiang/2020072308/" + group + "-"+unit+"-"+level + ".png";
+
+                //判断png是否存在
+                var tmpImage = new Image();
+                tmpImage.src = pnghttp;
+                tmpImage.index = i;
+                tmpImage.west = west;
+                tmpImage.south = south;
+                tmpImage.east = east;
+                tmpImage.north = north;
+
+                tmpImage.onload = function() {
+                  viewer.entities.add({
+                    id: this.index,
+                    rectangle: {
+                      coordinates: Cesium.Rectangle.fromDegrees(this.west, this.south, this.east, this.north),
+                      material: this.src,
+                      zIndex: 3,
+                    },
+                  });
+
+                  if(showbound == true){
+                    viewer.entities.add({
+                      rectangle : {
+                        coordinates : Cesium.Rectangle.fromDegrees(west, south, east, north),
+                        fill: false,
+                        outlineWidth: 5,
+                        outline: true
+                      }
+                    });
+                  }
+                };
+                tmpImage.onerror = function() {
+
+                };
+
+
+
+              }
+
+            }
+
+          },
+          error:function (err) {
+            console.log(err.statusText);
+          }
+        });
+      };
+
+      function startup(Cesium, RivlUnitImageProvider) {
+        "use strict";
+
+        var yxtdtimageryProvider = new Cesium.WebMapTileServiceImageryProvider({
+          url: "http://t0.tianditu.com/img_w/wmts?service=wmts&request=GetTile&version=1.0.0&LAYER=img&tileMatrixSet=w&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&style=default&format=tiles&tk=46a08ed576eb9ad93d6a465a55544a5b",
+          layer: "tdtBasicLayer",
+          style: "default",
+          format: "image/jpeg",
+          tileMatrixSetID: "GoogleMapsCompatible",
+          show: true
+        })
+
+        var shpdtimageryProvider = new Cesium.WebMapTileServiceImageryProvider({
+          url: "http://t0.tianditu.com/vec_w/wmts?service=wmts&request=GetTile&version=1.0.0&LAYER=vec&tileMatrixSet=w&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&style=default&format=tiles&tk=46a08ed576eb9ad93d6a465a55544a5b",
+          layer: "tdtBasicLayer",
+          style: "default",
+          format: "image/jpeg",
+          tileMatrixSetID: "GoogleMapsCompatible",
+          show: true
+        })
+
+        var rivlUnitProvider = new RivlUnitImageProvider('http://192.168.1.158:8080/HSFXResources/staticFile/images/shandong/2020072308/{group}-{unit}-{z}.png', true, 1, 18, { alpha: 1 });
+
+        var selfPro = new Cesium.ArcGisMapServerImageryProvider({
+          url: "http://hsfx.bjdclw.com:8060/arcgis/rest/services/chinaBound/MapServer",
+        });
+        var viewer = new Cesium.Viewer("cesiumContainer", {
+          imageryProvider: selfPro
+        });
+        viewer.extend(Cesium.viewerCesiumInspectorMixin);
+        // viewer.imageryLayers.addImageryProvider(new Cesium.WebMapTileServiceImageryProvider({
+        //   url: "http://t0.tianditu.gov.cn/cva_w/wmts?tk=46a08ed576eb9ad93d6a465a55544a5b&service=wmts&request=GetTile&version=1.0.0&LAYER=cva&tileMatrixSet=w&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}&style=default&format=tiles",
+        //   layer: "tdtAnnoLayer",
+        //   style: "default",
+        //   format: "image/jpeg",
+        //   tileMatrixSetID: "GoogleMapsCompatible",
+        //   show: false
+        // }));
+        // viewer.imageryLayers.addImageryProvider(shpdtimageryProvider);
+
+        loadAllRivlUnitPngTile(viewer);
+        //viewer.imageryLayers.addImageryProvider(rivlUnitProvider);
+
+        var terrainProvider = new Cesium.CesiumTerrainProvider({
+          url: "http://hsfx.bjdclw.com:8062/cnterrain20",
+          requestWaterMask: false,
+          requestVertexNormals: true,
+        });
+
+        viewer.terrainProvider = terrainProvider;
+
+
+        // LoadRectangleWithImage(viewer);
+        viewer.camera.flyTo({
+          destination : Cesium.Cartesian3.fromDegrees(118.286734,36.459822, 15000.0)
+        });
+        //viewer.flyTo(entity);
+
+        //Sandcastle_End
+        Sandcastle.finishedLoading();
+      }
+      if (typeof Cesium !== "undefined") {
+        window.startupCalled = true;
+        startup(Cesium);
+      }
+    </script>
+  </body>
+</html>
