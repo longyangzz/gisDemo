@@ -25,6 +25,7 @@
   "dependencies": {
     "compression": "^1.7.4",
     "express": "^4.16.4",
+    "ol": "^6.15.1",
     "request": "^2.88.0",
     "yargs": "^13.2.2"
   }

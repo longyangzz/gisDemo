@@ -69,7 +69,7 @@ var Footer = React.createClass({
 var Thumb = React.createClass({
     render: function() {
         var r = this.props.resource;
-        var href = '/' + (r.old ? 'old/' : '') + 'data/' + r.page + '.html';
+        var href = '/' + (r.old ? 'old/' : '') + 'example/' + r.page + '.html';
         var oldhref = '/old/data/' + r.page + '.html';
 
         var ext = [
@@ -141,7 +141,7 @@ var Page = React.createClass({
         var resources = [
             new Resource('Red Rocks Amphitheatre', 'red-rocks', both),
             new Resource('cesium风场', 'demo1-CesiumWind', both, "gif"),
-
+            new Resource('openlayer-json', 'ol-json等值面测试', both),
         ];
 
         return <div>
