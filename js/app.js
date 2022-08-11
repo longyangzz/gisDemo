@@ -142,6 +142,8 @@ var Page = React.createClass({
             new Resource('Red Rocks Amphitheatre', 'red-rocks', both),
             new Resource('cesium风场', 'demo1-CesiumWind', both, "gif"),
             new Resource('openlayer-json', 'ol-json等值面测试', both),
+            new Resource('mapbox测试', 'mapbox-baseDEMO', both, "png"),
+
         ];
 
         return <div>
