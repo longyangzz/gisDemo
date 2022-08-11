@@ -3,18 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <title>Vector Layer</title>
-
-    <script src='https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js'></script>
-    <link href='https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.css' rel='stylesheet' />
+    <!-- Pointer events polyfill for old browsers, see https://caniuse.com/#feat=pointer -->
+    <script src="https://unpkg.com/elm-pep@1.0.6/dist/elm-pep.js"></script>
+    <!-- The lines below are only needed for old environments like Internet Explorer and Android 4.x -->
+    <script src="https://cdn.polyfill.io/v3/polyfill.min.js?features=fetch,requestAnimationFrame,Element.prototype.classList,TextDecoder"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/core-js/3.18.3/minified.js"></script>
+    <link rel="stylesheet" href="../node_modules/ol/ol.css">
+    <style>
+        .map {
+            width: 100%;
+            height:400px;
+        }
+    </style>
 </head>
 <body>
-<div id='map' style='width: 400px; height: 300px;'></div>
-<script>
-    mapboxgl.accessToken = 'pk.eyJ1IjoiYWxvbmc4NiIsImEiOiJjanBtZjM0MTkwaHd5M3dvOWtwNnM2OWY1In0.z_XvvoPUcFqRUre_YW295A';
-    var map = new mapboxgl.Map({
-        container: 'map',
-        style: 'mapbox://styles/mapbox/streets-v11'
-    });
-</script>
-
+<div id="map" class="map"></div>
+<div id="info">&nbsp;</div>
+<script type="module" src="../js/ol3/main.js"></script>
+</body>
 </html>
